@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package loms;
+
+option go_package = '/lоms_server';
+
+import "googleapis/google/api/annotations.proto";
+service OrderService {
+    rpc OrderCreate (Request) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/orders"
+            body: "*"
+        };
+    }
+    rpc OrderInfo (OrderListRequest) returns (OrderListResponse);
+    rpc OrderPay(OrderPayRequest) returns (OrderPayResponse);
+    rpc OrderCancel(OrderCancelRequest) returns (OrderCancelResponse);
+    rpc ItemDelete(ItemDeleteRequest) returns (ItemDeleteResponse);
+}
+
+
+message Request {
+    int64 user = 1;
+    repeated Item items = 2;  
+
+    message Item {
+        uint32 sku = 1;  
+        uint64 count = 2;  
+    }
+}
+
+message Response {
+    int64 orderID = 1;
+}
+
+message OrderListRequest {
+    int64 orderID = 1; 
+}
+
+message OrderListResponse {
+    string status = 1;
+    int64 user = 2;
+    repeated Item items = 3;  
+    message Item {
+        uint32 sku = 1;  
+        uint64 count = 2;  
+    }
+}
+
+message CartItem {
+    uint32 sku = 1;
+    uint32 count = 2;
+    string name = 3;
+    uint32 price = 4;
+}
+
+message OrderPayRequest {
+    int64 orderID = 1;
+}
+
+message OrderPayResponse {
+}
+
+message OrderCancelRequest {
+    int64 orderID = 1;
+}
+
+message ItemToAdd {
+    uint32 sku = 1;
+    uint32 count = 2;
+}
+
+message OrderCancelResponse {
+}
+
+message ItemDeleteRequest {
+    int64 userID = 1;
+    uint32 sku = 2;
+}
+
+message ItemDeleteResponse {
+
+}
