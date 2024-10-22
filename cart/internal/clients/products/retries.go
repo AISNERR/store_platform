@@ -7,16 +7,20 @@ import (
 	"time"
 )
 
+type ProductClient interface {
+	GetProduct(ctx context.Context, sku int64) (model.ProductInfo, error)
+}
+
 type WithRetries struct {
 	retryCount int64
 	pause      time.Duration
-	next       Next
+	next       ProductClient
 }
 
 func NewProductWithRetries(
 	retryCount int64,
 	pause time.Duration,
-	next Next,
+	next ProductClient,
 ) *WithRetries {
 	return &WithRetries{
 		retryCount: retryCount,

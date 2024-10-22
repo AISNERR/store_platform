@@ -3,7 +3,7 @@ package loms
 import (
 	"context"
 	"log"
-	pb "route256/cart/proto/loms_server"
+	pb  "route256/cart/v1"
 	"time"
 	"google.golang.org/grpc"
 )
@@ -14,7 +14,7 @@ type Item struct {
 }
 
 type LomsClient struct {
-	lomsClinet pb.OrderServiceClient
+	lomsClinet pb.LOMSServiceClient
 }
 
 type ConnRPC struct{
@@ -30,22 +30,22 @@ func NewConnRPC(conn *grpc.ClientConn) *ConnRPC {
 
 func NewOrderServiceClient(conn *grpc.ClientConn) *LomsClient {
 	return &LomsClient{
-		lomsClinet: pb.NewOrderServiceClient(conn),
+		lomsClinet: pb.NewLOMSServiceClient(conn),
 	}
 }
 
 func (p *LomsClient) OrderCreate(user_id int64, items []Item) {
-	var requestItems []*pb.Request_Item
+	var requestItems []*pb.Item
 
 	for _, item := range items {
-		requestItem := &pb.Request_Item{
+		requestItem := &pb.Item{
 			Sku:   uint32(item.Sku_id),
-			Count: uint64(item.Count),
+			Count: uint32(item.Count),
 		}
 		requestItems = append(requestItems, requestItem)
 	}
-	req := &pb.Request{
-		User:  user_id,
+	req := &pb.OrderCreateRequest{
+		UserId:  user_id,
 		Items: requestItems,
 	}
 
@@ -57,5 +57,5 @@ func (p *LomsClient) OrderCreate(user_id int64, items []Item) {
 		log.Fatalf("could not create order: %v", err)
 	}
 
-	log.Printf("Order created with ID: %d", res.OrderID)
+	log.Printf("Order created with ID: %d", res.OrderId)
 }

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"route256/cart/internal/pkg/reviews/model"
 
-	pb "route256/cart/proto/loms_server"
+	pb "route256/cart/v1"
 
 	"google.golang.org/grpc"
 )
@@ -32,12 +32,12 @@ type CheckoutRPCRequest struct {
 }
 
 type LomsClient struct {
-	lomsClinet pb.OrderServiceClient
+	lomsClinet pb.LOMSServiceClient 
 }
 
 func NewOrderServiceClient(conn *grpc.ClientConn) *LomsClient {
 	return &LomsClient{
-		lomsClinet: pb.NewOrderServiceClient(conn),
+		lomsClinet: pb.NewLOMSServiceClient(conn),
 	}
 }
 
@@ -81,7 +81,7 @@ func (s *Server) CheckoutCart(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	response := map[string]int64{
-        "user_id": orderID,
+        "order_id": orderID,
     }
 	if err := json.NewEncoder(w).Encode(response); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)

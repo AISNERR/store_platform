@@ -3,7 +3,7 @@ package loms
 import (
 	"context"
 	"fmt"
-	pb "route256/cart/proto/loms_server"
+	pb "route256/cart/v1"
 
 	"route256/cart/internal/pkg/reviews/model"
 
@@ -11,11 +11,11 @@ import (
 )
 
 type LOMSClient struct {
-	pbCli pb.OrderServiceClient
+	pbCli pb.LOMSServiceClient
 }
 
 func New(cc grpc.ClientConnInterface) *LOMSClient {
-	cli := pb.NewOrderServiceClient(cc)
+	cli := pb.NewLOMSServiceClient(cc)
 	return &LOMSClient{
 		pbCli: cli,
 	}
@@ -27,22 +27,22 @@ func (l *LOMSClient) OrderCreate(ctx context.Context, user model.UserID, cart *m
 	if err != nil {
 		return 0, fmt.Errorf("grpcCall err OrderCreate: %w", err)
 	}
-	return resp.OrderID, nil
+	return resp.OrderId, nil
 }
 
-func toDTO(user model.UserID, cart *model.CartInfo) *pb.Request {
-	items := make([]*pb.Request_Item, 0, len(cart.Items))
+func toDTO(user model.UserID, cart *model.CartInfo) *pb.OrderCreateRequest {
+	items := make([]*pb.Item, 0, len(cart.Items))
 
 	for _, v := range cart.Items {
-		item := pb.Request_Item{
+		item := pb.Item{
 			Sku:   uint32(v.SkuId),
-			Count: uint64(v.Count),
+			Count: uint32(v.Count),
 		}
 		items = append(items, &item)
 	}
 
-	return &pb.Request{
-		User:  int64(user),
+	return &pb.OrderCreateRequest{
+		UserId:  int64(user),
 		Items: items,
 	}
 }

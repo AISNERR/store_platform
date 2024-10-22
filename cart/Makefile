@@ -26,6 +26,11 @@ coverage:
 	go test $(TEST_DIR) -coverprofile=coverage.out
 	go tool cover -html=coverage.out -o coverage.html
 
+coverage-race:
+	go test $(TEST_DIR) -coverprofile=coverage.out -race
+	go tool cover -html=coverage.out -o coverage.html
+
+
 lint:
 	gocyclo .
 	gocyclo $(SOURCE_DIR)
